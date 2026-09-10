@@ -7,7 +7,7 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Hashing and verifying passwords
+// Hashing passwords
 export const hashPassword = async (password: string) => {
   const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUND);
   return hashedPassword;
