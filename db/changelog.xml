@@ -66,14 +66,32 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="seabasket" id="3">
-        <dropUniqueConstraint
-                tableName="user_verifications"
-                constraintName="uk_user_verifications_token"/>
+  <changeSet author="Arjun Rajput" id="3">
+    <preConditions onFail="MARK_RAN">
+        <uniqueConstraintExists
+            tableName="user_verifications"
+            constraintName="uk_user_verifications_token"/>
+    </preConditions>
 
-        <createIndex indexName="idx_user_verifications_userId_token" tableName="user_verifications">
-            <column name="user_id"/>
-            <column name="token"/>
-        </createIndex>
-    </changeSet>
+    <dropUniqueConstraint
+        tableName="user_verifications"
+        constraintName="uk_user_verifications_token"/>
+</changeSet>
+
+<changeSet author="Arjun Rajput" id="4">
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <indexExists
+                tableName="user_verifications"
+                indexName="idx_user_verifications_userId_token"/>
+        </not>
+    </preConditions>
+
+    <createIndex
+        indexName="idx_user_verifications_userId_token"
+        tableName="user_verifications">
+        <column name="user_id"/>
+        <column name="token"/>
+    </createIndex>
+</changeSet>
 </databaseChangeLog>
