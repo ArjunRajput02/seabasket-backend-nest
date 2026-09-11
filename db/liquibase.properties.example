@@ -1,0 +1,6 @@
+changeLogFile=changelog.xml
+liquibase.command.url=
+liquibase.command.username=
+liquibase.command.password=
+
+driver = 
