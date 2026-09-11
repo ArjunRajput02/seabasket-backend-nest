@@ -1,2 +1,3 @@
 export const BCRYPT_SALT_ROUND = 10;
 export const JWT_TOKEN_VERSION = 'v1';
+export const EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES = 10;
