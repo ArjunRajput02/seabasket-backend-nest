@@ -28,7 +28,7 @@ export const decode = <ResT>(token: string): ResT | false => {
   if (token) {
     try {
       return jwt.verify(token, `${process.env.JWT_SECRET}_${JWT_TOKEN_VERSION}`) as ResT;
-    } catch (_error) {
+    } catch {
       return false;
     }
   }
