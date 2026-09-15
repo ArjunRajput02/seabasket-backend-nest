@@ -46,7 +46,7 @@ export class GuestService {
     });
 
     if (existingUser) {
-      this.logger.warn(`Sign up failed - email already exists: ${email}`);
+      this.logger.warn('An account with this email already exists', { email });
       throw new ConflictException('An account with this email already exists');
     }
     // It checks if the email already exists, hashes the password,
