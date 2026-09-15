@@ -5,10 +5,10 @@ type SendEmailParams = {
   to: string;
   subject: string;
   html: string;
-}
+};
 
 @Injectable()
-// The MailService class is responsible for sending emails, 
+// The MailService class is responsible for sending emails,
 // It uses the nodemailer library to create a transporter
 export class MailService {
   private readonly logger = new Logger(MailService.name);
@@ -26,7 +26,7 @@ export class MailService {
     });
   }
 
-//this method sends a verification email to the specified recipient with the provided OTP.
+  // this method sends a verification email to the specified recipient with the provided OTP.
   async sendEmail({ to, subject, html }: SendEmailParams): Promise<void> {
     await this.transporter.sendMail({
       from: process.env.MAIL_FROM,

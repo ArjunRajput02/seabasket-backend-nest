@@ -16,10 +16,11 @@ export class GuestController {
   constructor(private readonly guestService: GuestService) {}
 
   @Post('sign-up')
-  @HttpCode(HttpStatus.CREATED)// this is the default status code for POST requests
+  @HttpCode(HttpStatus.CREATED) // this is the default status code for POST requests
   @ApiOperation({
     summary: 'Sign up',
-    description: 'Creates a new user account. Email must be unique; password is encrypted before storage.',
+    description:
+      'Creates a new user account. Email must be unique; password is encrypted before storage.',
   })
   @ApiResponse({ status: 201, description: 'Account created.', type: SignUpResponseDto })
   @ApiResponse({ status: 409, description: 'Email already registered.' })

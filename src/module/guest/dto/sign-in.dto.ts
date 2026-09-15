@@ -5,7 +5,9 @@ import { IsEmail, IsString } from 'class-validator';
 export class SignInRequestDto {
   @ApiProperty({ example: 'jane@example.com' })
   @IsEmail()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : String(value),
+  )
   email: string;
 
   @ApiProperty({ example: 'password123' })

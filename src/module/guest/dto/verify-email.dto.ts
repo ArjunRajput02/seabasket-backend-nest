@@ -6,7 +6,9 @@ import { SignUpResponseDto } from './sign-up.dto';
 export class VerifyEmailRequestDto {
   @ApiProperty({ example: 'arjun.rajput@seaflux.tech' })
   @IsEmail()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : String(value),
+  )
   email: string;
 
   @ApiProperty({ example: '530121' })

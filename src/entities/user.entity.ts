@@ -6,13 +6,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { ApiProperty } from "@nestjs/swagger";
-import { UserVerificationEntity } from "./user-verification.entity";
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { UserVerificationEntity } from './user-verification.entity';
 
-@Entity({ name: "users" })
+@Entity({ name: 'users' })
 export class UserEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id: string;
 
@@ -26,7 +26,7 @@ export class UserEntity {
   email: string;
 
   @Index({ unique: true })
-  @Column({ type: "varchar", length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   @ApiProperty({ required: false, nullable: true })
   phone: string;
 
@@ -34,11 +34,11 @@ export class UserEntity {
   @ApiProperty()
   password: string;
 
-  @CreateDateColumn({ name: "created_at" })
+  @CreateDateColumn({ name: 'created_at' })
   @ApiProperty()
   createdAt: Date;
 
-  @UpdateDateColumn({ name: "updated_at" })
+  @UpdateDateColumn({ name: 'updated_at' })
   @ApiProperty()
   updatedAt: Date;
 

@@ -6,12 +6,14 @@ export class SignUpRequestDto {
   @ApiProperty({ example: 'Jane Doe' })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : String(value)))
   name: string;
 
   @ApiProperty({ example: 'jane@example.com' })
   @IsEmail()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : String(value),
+  )
   email: string;
 
   @ApiProperty({ example: '919876543210' })
