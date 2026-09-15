@@ -42,12 +42,23 @@ export class GuestService {
     const { name, email, phone, password } = signUpDto;
 
     const existingUser = await this.userRepository.findOne({
-      where: { email },
+      where: [{ email }, { phone }],
     });
 
     if (existingUser) {
-      this.logger.warn('An account with this email already exists', { email });
-      throw new ConflictException('An account with this email already exists');
+      if (existingUser.email === email) {
+        this.logger.warn('An account with this email already exists', { email });
+
+        throw new ConflictException('An account with this email already exists');
+      }
+
+      if (existingUser.phone === phone) {
+        this.logger.warn('An account with this phone number already exists', {
+          phone,
+        });
+
+        throw new ConflictException('An account with this phone number already exists');
+      }
     }
     // It checks if the email already exists, hashes the password,
     const hashedPassword = await hashPassword(password);
