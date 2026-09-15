@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
-import { Exclude } from "class-transformer";
 import { UserVerificationEntity } from "./user-verification.entity";
 
 @Entity({ name: "users" })
@@ -29,20 +28,20 @@ export class UserEntity {
   @Index({ unique: true })
   @Column({ type: "varchar", length: 20, nullable: true })
   @ApiProperty({ required: false, nullable: true })
-  phone: string | null;
+  phone: string;
 
   @Column()
-  @Exclude()
+  @ApiProperty()
   password: string;
 
-  @OneToMany(() => UserVerificationEntity, (verification) => verification.user)
-  verifications: UserVerificationEntity[];
-
   @CreateDateColumn({ name: "created_at" })
-  @Exclude()
+  @ApiProperty()
   createdAt: Date;
 
   @UpdateDateColumn({ name: "updated_at" })
-  @Exclude()
+  @ApiProperty()
   updatedAt: Date;
+
+  @OneToMany(() => UserVerificationEntity, (verification) => verification.user)
+  verifications: UserVerificationEntity[];
 }

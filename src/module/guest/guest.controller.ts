@@ -1,8 +1,14 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserEntity } from '@/entities';
 import { GuestService } from './guest.service';
-import { SignInDto, VerifyEmailResponseDto, SignUpDto, VerifyEmailDto } from './dto';
+import {
+  SignInRequestDto,
+  SignInResponseDto,
+  SignUpRequestDto,
+  SignUpResponseDto,
+  VerifyEmailRequestDto,
+  VerifyEmailResponseDto,
+} from './dto';
 
 @ApiTags('Guest')
 @Controller('guest')
@@ -10,14 +16,14 @@ export class GuestController {
   constructor(private readonly guestService: GuestService) {}
 
   @Post('sign-up')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.CREATED)// this is the default status code for POST requests
   @ApiOperation({
     summary: 'Sign up',
     description: 'Creates a new user account. Email must be unique; password is encrypted before storage.',
   })
-  @ApiResponse({ status: 201, description: 'Account created.', type: UserEntity })
+  @ApiResponse({ status: 201, description: 'Account created.', type: SignUpResponseDto })
   @ApiResponse({ status: 409, description: 'Email already registered.' })
-  signUp(@Body() signUpDto: SignUpDto) {
+  signUp(@Body() signUpDto: SignUpRequestDto) {
     return this.guestService.signUp(signUpDto);
   }
 
@@ -27,9 +33,9 @@ export class GuestController {
     description:
       'Logs in with email and password. On success, also emails a verification OTP to confirm the address.',
   })
-  @ApiResponse({ status: 200, description: 'Logged in; OTP sent.', type: VerifyEmailResponseDto })
+  @ApiResponse({ status: 200, description: 'Logged in; OTP sent.', type: SignInResponseDto })
   @ApiResponse({ status: 401, description: 'Email not found or password incorrect.' })
-  signIn(@Body() signInDto: SignInDto) {
+  signIn(@Body() signInDto: SignInRequestDto) {
     return this.guestService.signIn(signInDto);
   }
 
@@ -39,10 +45,9 @@ export class GuestController {
     summary: 'Verify email with OTP',
     description: 'Verifies the user email using the 6-digit OTP sent at sign-in.',
   })
-  @ApiResponse({ status: 200, description: 'Account verified.' })
+  @ApiResponse({ status: 200, description: 'Account verified.', type: VerifyEmailResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid or expired OTP.' })
-  @ApiResponse({ status: 409, description: 'Account already verified.' })
-  verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+  verifyEmail(@Body() verifyEmailDto: VerifyEmailRequestDto) {
     return this.guestService.verifyEmail(verifyEmailDto);
   }
 }

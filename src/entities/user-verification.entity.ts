@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { UserEntity } from './user.entity';
 
 @Index(['userId', 'token'])
@@ -21,12 +20,8 @@ export class UserVerificationEntity {
   @Column({ name: 'user_id' })
   userId: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.verifications, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
-
   @Column()
-  @Exclude()
+  @ApiProperty()
   token: string;
 
   @Column({ name: 'expires_at', type: 'timestamp' })
@@ -40,4 +35,8 @@ export class UserVerificationEntity {
   @CreateDateColumn({ name: 'created_at' })
   @ApiProperty()
   createdAt: Date;
+
+  @ManyToOne(() => UserEntity, (user) => user.verifications, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 }
