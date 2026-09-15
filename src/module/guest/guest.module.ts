@@ -6,7 +6,9 @@ import { GuestController } from './guest.controller';
 import { GuestService } from './guest.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserVerificationEntity, PasswordResetTokenEntity]),],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, UserVerificationEntity, PasswordResetTokenEntity]),
+  ],
   controllers: [GuestController],
   providers: [GuestService, MailService],
   exports: [GuestService],
