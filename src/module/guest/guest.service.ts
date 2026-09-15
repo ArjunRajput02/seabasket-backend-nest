@@ -133,7 +133,7 @@ export class GuestService {
 
     await this.userVerificationRepository.delete({ id: verification.id });
 
-    // If the OTP is valid and not expired, it generates an OTP for the user.
+    // If the OTP is valid and not expired, it generates an access token for the user.
     const accessToken = encode({
       sub: user.id,
       email: user.email,
