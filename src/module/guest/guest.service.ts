@@ -1,26 +1,33 @@
-import { UserEntity, UserVerificationEntity } from '@/entities';
-import { encode, hashPassword, verifyHash } from '@/shared/helper';
-import { EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES } from '@/shared/constant';
-import { MailService } from '@/shared/services/mail.service';
-import { renderEmailTemplate } from '@/templates/template.util';
+import { PasswordResetTokenEntity, UserEntity, UserVerificationEntity } from "@/entities";
+import { encode, hashPassword, verifyHash } from "@/shared/helper";
+import {
+  EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES,
+  PASSWORD_RESET_TOKEN_EXPIRY_MINUTES,
+} from "@/shared/constant";
+import { MailService } from "@/shared/services/mail.service";
+import { renderEmailTemplate } from "@/templates/template.util";
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   Logger,
   UnauthorizedException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { randomInt } from 'crypto';
-import { Repository } from 'typeorm';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { createHash, randomBytes, randomInt } from "crypto";
+import { Repository } from "typeorm";
 import {
+  ForgotPasswordRequestDto,
+  ForgotPasswordResponseDto,
+  ResetPasswordRequestDto,
+  ResetPasswordResponseDto,
   SignInRequestDto,
   SignInResponseDto,
   SignUpRequestDto,
   SignUpResponseDto,
   VerifyEmailRequestDto,
   VerifyEmailResponseDto,
-} from './dto';
+} from "./dto";
 
 @Injectable()
 export class GuestService {
@@ -32,6 +39,9 @@ export class GuestService {
 
     @InjectRepository(UserVerificationEntity)
     private readonly userVerificationRepository: Repository<UserVerificationEntity>,
+
+    @InjectRepository(PasswordResetTokenEntity)
+    private readonly passwordResetTokenRepository: Repository<PasswordResetTokenEntity>,
 
     private readonly mailService: MailService,
   ) {}
@@ -160,6 +170,88 @@ export class GuestService {
         phone: user.phone,
       },
     };
+  }
+
+  // this method handles the forgot password process.
+  async forgotPassword(forgotPasswordDto: ForgotPasswordRequestDto,): Promise<ForgotPasswordResponseDto> {
+    const { email } = forgotPasswordDto;
+
+    const genericMessage ="We have sent a reset password link to your email";
+
+    // It checks if the user exists in the database
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      this.logger.error('Please Enter the correct email', {email});
+      throw new BadRequestException('Please Enter the correct email')
+    }
+
+    const rawToken = randomBytes(32).toString("hex");// generates a secure random token for password reset
+    const tokenHash = createHash("sha256").update(rawToken).digest("hex");// hashes the token using SHA-256 for secure storage in the database
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000,); // sets an expiration time for the token
+
+    // It deletes any existing password reset tokens for the user to ensure only one valid token exists at a time
+    await this.passwordResetTokenRepository.delete({ userId: user.id }); 
+
+    // It creates a new password reset token entity and saves it to the database
+    const newResetToken = this.passwordResetTokenRepository.create({
+      userId: user.id,
+      tokenHash,
+      expiresAt,
+    });
+    await this.passwordResetTokenRepository.save(newResetToken);// saves the new password reset token to the database
+
+    // It constructs a password reset link that includes the raw token as a query parameter
+    const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PATH ?? "/reset-password"}?token=${rawToken}`;
+
+    // It renders an email template for the password reset email, including the user's name and the reset link
+    const { subject, html } = renderEmailTemplate("forgot-password", {
+      name: user.name,
+      resetLink,
+    });
+
+    // sends the password reset email to the user's email address
+    await this.mailService.sendEmail({ to: user.email, subject, html });
+
+    return { message: genericMessage };
+  }
+
+ // this method handles the password reset process using the token from the reset password link.
+ async resetPassword( token: string,resetPasswordDto: ResetPasswordRequestDto,): Promise<ResetPasswordResponseDto> {
+    const { newPassword } = resetPasswordDto;
+
+    const tokenHash = createHash("sha256").update(token).digest("hex");// hashes the provided token using SHA-256 for secure comparison with the stored hashed token in the database
+
+    // It checks if the hashed token exists in the database and retrieves the corresponding password reset token entity
+    const resetToken = await this.passwordResetTokenRepository.findOne({
+      where: { tokenHash },
+    });
+
+    // If the token is invalid or expired, it throws a BadRequestException with an appropriate error message
+    if (!resetToken) {
+      this.logger.error("Invalid or expired reset link");
+      throw new BadRequestException("Invalid or expired reset link");
+    }
+
+    // It checks if the token has expired by comparing the expiration time with the current time
+    if (resetToken.expiresAt.getTime() < Date.now()) {
+      this.logger.error('Invalid or expired reset link:', {userId: resetToken.userId});
+      await this.passwordResetTokenRepository.delete({ id: resetToken.id });
+      throw new BadRequestException("Invalid or expired reset link");
+    }
+
+    const hashedPassword = await hashPassword(newPassword);// hashes the new password
+
+    // It updates the user's password in the database with the newly hashed password
+    await this.userRepository.update(
+      { id: resetToken.userId },
+      { password: hashedPassword },
+    );
+    await this.passwordResetTokenRepository.delete({ id: resetToken.id }); // deletes the used password reset token from the database
+
+    return { message: "Your password has been reset successfully" };
   }
 
   // this method generates a 6-digit OTP
