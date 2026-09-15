@@ -57,13 +57,13 @@ export class GuestService {
 
     if (existingUser) {
       if (existingUser.email === email) {
-        this.logger.warn('An account with this email already exists', { email });
+        this.logger.error('An account with this email already exists', { email });
 
         throw new ConflictException('An account with this email already exists');
       }
 
       if (existingUser.phone === phone) {
-        this.logger.warn('An account with this phone number already exists', {
+        this.logger.error('An account with this phone number already exists', {
           phone,
         });
 
