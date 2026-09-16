@@ -12,30 +12,32 @@ import { UserEntity } from './user.entity';
 
 @Entity({ name: 'password_reset_tokens' })
 export class PasswordResetTokenEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   @ApiProperty()
-  id: string;
+  id: number;
 
-  @Column({ name: 'user_id' })
-  userId: string;
+  @Column()
+  @ApiProperty()
+  userId: number;
 
   @Index({ unique: true })
-  @Column({ name: 'token_hash' })
+  @Column()
+  @ApiProperty()
   tokenHash: string;
 
-  @Column({ name: 'expires_at', type: 'timestamp' })
+  @Column({ type: 'timestamp' })
   @ApiProperty()
   expiresAt: Date;
 
-  @Column({ name: 'used_at', type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   @ApiProperty({ required: false, nullable: true })
   usedAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;
 
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 }

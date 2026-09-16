@@ -12,9 +12,9 @@ import { UserVerificationEntity } from './user-verification.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   @ApiProperty()
-  id: string;
+  id: number;
 
   @Column({ length: 100 })
   @ApiProperty()
@@ -34,11 +34,11 @@ export class UserEntity {
   @ApiProperty()
   password: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'createdAt' })
   @ApiProperty()
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updatedAt' })
   @ApiProperty()
   updatedAt: Date;
 
