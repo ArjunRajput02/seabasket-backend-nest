@@ -6,8 +6,8 @@ import {
   SignInResponseDto,
   SignUpRequestDto,
   SignUpResponseDto,
-  VerifyEmailRequestDto,
-  VerifyEmailResponseDto,
+  VerifyOtpRequestDto,
+  VerifyOtpResponseDto,
 } from './dto';
 
 @ApiTags('Guest')
@@ -24,8 +24,8 @@ export class GuestController {
   })
   @ApiResponse({ status: 201, description: 'Account created.', type: SignUpResponseDto })
   @ApiResponse({ status: 409, description: 'Email already registered.' })
-  signUp(@Body() signUpDto: SignUpRequestDto) {
-    return this.guestService.signUp(signUpDto);
+  signUp(@Body() SignUpRequestDto: SignUpRequestDto) {
+    return this.guestService.signUp(SignUpRequestDto);
   }
 
   @Post('sign-in')
@@ -36,8 +36,8 @@ export class GuestController {
   })
   @ApiResponse({ status: 200, description: 'Logged in; OTP sent.', type: SignInResponseDto })
   @ApiResponse({ status: 401, description: 'Email not found or password incorrect.' })
-  signIn(@Body() signInDto: SignInRequestDto) {
-    return this.guestService.signIn(signInDto);
+  signIn(@Body() signInRequestDto: SignInRequestDto) {
+    return this.guestService.signIn(signInRequestDto);
   }
 
   @Post('verify-email')
@@ -46,9 +46,9 @@ export class GuestController {
     summary: 'Verify email with OTP',
     description: 'Verifies the user email using the 6-digit OTP sent at sign-in.',
   })
-  @ApiResponse({ status: 200, description: 'Account verified.', type: VerifyEmailResponseDto })
+  @ApiResponse({ status: 200, description: 'Account verified.', type: VerifyOtpResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid or expired OTP.' })
-  verifyEmail(@Body() verifyEmailDto: VerifyEmailRequestDto) {
-    return this.guestService.verifyEmail(verifyEmailDto);
+  verifyOtp(@Body() VerifyOtpRequestDto: VerifyOtpRequestDto) {
+    return this.guestService.verifyOtp(VerifyOtpRequestDto);
   }
 }

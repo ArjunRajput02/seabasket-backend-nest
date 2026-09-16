@@ -28,15 +28,8 @@ export class SignUpRequestDto {
 }
 
 export class SignUpResponseDto {
-  @ApiProperty()
-  id: string;
-
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  email: string;
-
-  @ApiProperty()
-  phone: string;
+  @ApiProperty({
+    example: 'User registered successfully. We have sent a verification OTP to your email.',
+  })
+  message: string;
 }
