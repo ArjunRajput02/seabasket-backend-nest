@@ -25,6 +25,6 @@ export class VerifyOtpResponseDto {
 
   @ApiProperty()
   user: {
-    id: string;
+    id: number;
   };
 }

@@ -13,30 +13,31 @@ import { UserEntity } from './user.entity';
 @Index(['userId', 'token'])
 @Entity({ name: 'user_verifications' })
 export class UserVerificationEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   @ApiProperty()
-  id: string;
+  id: number;
 
-  @Column({ name: 'user_id' })
-  userId: string;
+  @Column()
+  @ApiProperty()
+  userId: number;
 
   @Column()
   @ApiProperty()
   token: string;
 
-  @Column({ name: 'expires_at', type: 'timestamp' })
+  @Column({ type: 'timestamp' })
   @ApiProperty()
   expiresAt: Date;
 
-  @Column({ name: 'verified_at', type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   @ApiProperty({ required: false, nullable: true })
   verifiedAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.verifications, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 }

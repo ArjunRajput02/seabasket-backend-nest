@@ -5,7 +5,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet author="Arjun Rajput" id="1">
         <createTable tableName="users">
-            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+            <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="pk_users" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(100)">
@@ -20,12 +20,13 @@
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+            <column name="updatedAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
+
         </createTable>
 
         <createIndex indexName="idx_users_email" tableName="users">
@@ -35,86 +36,51 @@
 
     <changeSet author="Arjun Rajput" id="2">
         <createTable tableName="user_verifications">
-            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+            <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="pk_user_verifications" nullable="false"/>
             </column>
-            <column name="user_id" type="UUID">
+            <column name="userId" type="INT">
                 <constraints nullable="false"/>
             </column>
+
             <column name="token" type="VARCHAR(255)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="uk_user_verifications_token"/>
-            </column>
-            <column name="expires_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="verified_at" type="TIMESTAMP"/>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+
+            <column name="expiresAt" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="verifiedAt" type="TIMESTAMP"/>
+
+            <column
+                name="createdAt"
+                type="TIMESTAMP"
+                defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
         </createTable>
 
         <addForeignKeyConstraint
-                constraintName="fk_user_verifications_userId"
-                baseTableName="user_verifications"
-                baseColumnNames="user_id"
-                referencedTableName="users"
-                referencedColumnNames="id"
-                onDelete="CASCADE"/>
+            constraintName="fk_user_verifications_userId"
+            baseTableName="user_verifications"
+            baseColumnNames="userId"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
 
-        <createIndex indexName="idx_user_verifications_userId" tableName="user_verifications">
-            <column name="user_id"/>
+        <addUniqueConstraint
+            tableName="user_verifications"
+            columnNames="token"
+            constraintName="uk_user_verifications_token"/>
+
+        <createIndex
+            indexName="idx_user_verifications_userId_token"
+            tableName="user_verifications">
+            <column name="userId"/>
+            <column name="token"/>
         </createIndex>
     </changeSet>
 
-  <changeSet author="Arjun Rajput" id="3">
-    <preConditions onFail="MARK_RAN">
-        <uniqueConstraintExists
-            tableName="user_verifications"
-            constraintName="uk_user_verifications_token"/>
-    </preConditions>
-
-    <dropUniqueConstraint
-        tableName="user_verifications"
-        constraintName="uk_user_verifications_token"/>
-</changeSet>
-
-<changeSet author="Arjun Rajput" id="4">
-    <preConditions onFail="MARK_RAN">
-        <not>
-            <indexExists
-                tableName="user_verifications"
-                indexName="idx_user_verifications_userId_token"/>
-        </not>
-    </preConditions>
-
-    <createIndex
-        indexName="idx_user_verifications_userId_token"
-        tableName="user_verifications">
-        <column name="user_id"/>
-        <column name="token"/>
-    </createIndex>
-</changeSet>
-
-<changeSet author="Arjun Rajput" id="6">
-    <renameColumn tableName="users" oldColumnName="created_at" newColumnName="createdAt" columnDataType="TIMESTAMP"/>
-    <renameColumn tableName="users" oldColumnName="updated_at" newColumnName="updatedAt" columnDataType="TIMESTAMP"/>
-</changeSet>
-
-<changeSet author="Arjun Rajput" id="7">
-    <renameColumn tableName="user_verifications" oldColumnName="user_id" newColumnName="userId" columnDataType="UUID"/>
-    <renameColumn tableName="user_verifications" oldColumnName="expires_at" newColumnName="expiresAt" columnDataType="TIMESTAMP"/>
-    <renameColumn tableName="user_verifications" oldColumnName="created_at" newColumnName="createdAt" columnDataType="TIMESTAMP"/>
-
-    <dropColumn tableName="user_verifications" columnName="verified_at"/>
-</changeSet>
-
-<changeSet author="Arjun Rajput" id="8">
-    <dropPrimaryKey tableName="user_verifications" constraintName="pk_user_verifications"/>
-    <dropColumn tableName="user_verifications" columnName="id"/>
-    <addColumn tableName="user_verifications">
-        <column name="id" type="INT" autoIncrement="true">
-            <constraints primaryKey="true" primaryKeyName="pk_user_verifications" nullable="false"/>
-        </column>
-    </addColumn>
-</changeSet>
 </databaseChangeLog>
