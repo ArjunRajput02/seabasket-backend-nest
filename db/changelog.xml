@@ -4,5 +4,81 @@
     xmlns:pro="http://www.liquibase.org/xml/ns/pro"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet author="Arjun Rajput" id="1">
+        <createTable tableName="users">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_users" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_users_email"/>
+            </column>
+            <column name="phone" type="VARCHAR(20)">
+                <constraints unique="true" uniqueConstraintName="uk_users_phone"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createIndex indexName="idx_users_email" tableName="users">
+            <column name="email"/>
+        </createIndex>
     </changeSet>
+
+    <changeSet author="Arjun Rajput" id="2">
+        <createTable tableName="user_verifications">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_user_verifications" nullable="false"/>
+            </column>
+            <column name="userId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="expiresAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column
+                name="createdAt"
+                type="TIMESTAMP"
+                defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+            constraintName="fk_user_verifications_userId"
+            baseTableName="user_verifications"
+            baseColumnNames="userId"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <addUniqueConstraint
+            tableName="user_verifications"
+            columnNames="token"
+            constraintName="uk_user_verifications_token"/>
+
+        <createIndex
+            indexName="idx_user_verifications_userId_token"
+            tableName="user_verifications">
+            <column name="userId"/>
+            <column name="token"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
