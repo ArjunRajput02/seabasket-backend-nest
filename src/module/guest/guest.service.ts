@@ -38,8 +38,8 @@ export class GuestService {
 
   // this method handles the sign-up process for a new user.
   // saves the new user to the database
-  async signUp(SignUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
-    const { name, email, phone, password } = SignUpRequestDto;
+  async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
+    const { name, email, phone, password } = signUpRequestDto;
 
     const existingUser = await this.userRepository.findOne({
       where: [{ email }, { phone }],
@@ -82,8 +82,8 @@ export class GuestService {
   }
 
   // This method handles the sign-in process for an existing user.
-  async signIn(SignInRequestDto: SignInRequestDto): Promise<SignInResponseDto> {
-    const { email, password } = SignInRequestDto;
+  async signIn(signInRequestDto: SignInRequestDto): Promise<SignInResponseDto> {
+    const { email, password } = signInRequestDto;
 
     // It checks if the user exists in the database.
     const user = await this.userRepository.findOne({
@@ -113,8 +113,8 @@ export class GuestService {
   }
 
   // This method handles the email verification process using the OTP sent to the user's email.
-  async verifyOtp(VerifyOtpRequestDto: VerifyOtpRequestDto): Promise<VerifyOtpResponseDto> {
-    const { email, otp } = VerifyOtpRequestDto;
+  async verifyOtp(verifyOtpRequestDto: VerifyOtpRequestDto): Promise<VerifyOtpResponseDto> {
+    const { email, otp } = verifyOtpRequestDto;
 
     // It checks if the user exists in the database.
     const user = await this.userRepository.findOne({

@@ -24,8 +24,8 @@ export class GuestController {
   })
   @ApiResponse({ status: 201, description: 'Account created.', type: SignUpResponseDto })
   @ApiResponse({ status: 409, description: 'Email already registered.' })
-  signUp(@Body() SignUpRequestDto: SignUpRequestDto) {
-    return this.guestService.signUp(SignUpRequestDto);
+  signUp(@Body() signUpRequestDto: SignUpRequestDto) {
+    return this.guestService.signUp(signUpRequestDto);
   }
 
   @Post('sign-in')
@@ -48,7 +48,7 @@ export class GuestController {
   })
   @ApiResponse({ status: 200, description: 'Account verified.', type: VerifyOtpResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid or expired OTP.' })
-  verifyOtp(@Body() VerifyOtpRequestDto: VerifyOtpRequestDto) {
-    return this.guestService.verifyOtp(VerifyOtpRequestDto);
+  verifyOtp(@Body() verifyOtpRequestDto: VerifyOtpRequestDto) {
+    return this.guestService.verifyOtp(verifyOtpRequestDto);
   }
 }
