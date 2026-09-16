@@ -25,8 +25,8 @@ import {
   SignInResponseDto,
   SignUpRequestDto,
   SignUpResponseDto,
-  VerifyEmailRequestDto,
-  VerifyEmailResponseDto,
+  VerifyOtpRequestDto,
+  VerifyOtpResponseDto,
 } from './dto';
 
 @Injectable()
@@ -48,54 +48,54 @@ export class GuestService {
 
   // this method handles the sign-up process for a new user.
   // saves the new user to the database
-  async signUp(signUpDto: SignUpRequestDto): Promise<SignUpResponseDto> {
-    const { name, email, phone, password } = signUpDto;
+  async signUp(SignUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
+    const { name, email, phone, password } = SignUpRequestDto;
 
     const existingUser = await this.userRepository.findOne({
       where: [{ email }, { phone }],
     });
 
     if (existingUser) {
-      if (existingUser.email === email) {
-        this.logger.error('An account with this email already exists', { email });
+      const { email: existingEmail, phone: existingPhone } = existingUser;
 
+      if (existingEmail === email) {
+        this.logger.error('An account with this email already exists', { email });
         throw new ConflictException('An account with this email already exists');
       }
 
-      if (existingUser.phone === phone) {
-        this.logger.error('An account with this phone number already exists', {
-          phone,
-        });
-
-        throw new ConflictException('An account with this phone number already exists');
+      if (existingPhone === phone) {
+        this.logger.error('An account with this phone already exists', { phone });
+        throw new ConflictException('An account with this phone already exists');
       }
     }
-    // It checks if the email already exists, hashes the password,
+
+    // It checks if the email already exists, hashes the password.
     const hashedPassword = await hashPassword(password);
 
-    // Creates a new user entity
+    // Creates a new user entity.
     const newUser = this.userRepository.create({
       name,
       email,
       phone,
       password: hashedPassword,
     });
-    const user = await this.userRepository.save(newUser); // saves the new user to the database
-    await this.sendVerificationOtp(user); // sends a verification OTP to the user's email.
+
+    // Saves the new user to the database.
+    const user = await this.userRepository.save(newUser);
+
+    // Sends a verification OTP to the user's email.
+    await this.sendVerificationOtp(user);
 
     return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
+      message: 'User registered successfully. We have sent a verification OTP to your email.',
     };
   }
 
-  // this method handles the sign-in process for an existing user.
-  async signIn(signInDto: SignInRequestDto): Promise<SignInResponseDto> {
-    const { email, password } = signInDto;
+  // This method handles the sign-in process for an existing user.
+  async signIn(SignInRequestDto: SignInRequestDto): Promise<SignInResponseDto> {
+    const { email, password } = SignInRequestDto;
 
-    // It checks if the user exists in the database
+    // It checks if the user exists in the database.
     const user = await this.userRepository.findOne({
       where: { email },
     });
@@ -105,7 +105,7 @@ export class GuestService {
       throw new UnauthorizedException('No account found with this email');
     }
 
-    // It verifies the provided password against the stored hashed password
+    // It verifies the provided password against the stored hashed password.
     const isPasswordValid = await verifyHash(password, user.password);
 
     if (!isPasswordValid) {
@@ -113,7 +113,7 @@ export class GuestService {
       throw new UnauthorizedException('Incorrect password');
     }
 
-    // If the password is valid, it generates a new OTP, saves it in the database.
+    // If the password is valid, it generates a new OTP and saves it in the database.
     await this.sendVerificationOtp(user);
 
     return {
@@ -122,11 +122,11 @@ export class GuestService {
     };
   }
 
-  // this method handles the email verification process using the OTP sent to the user's email.
-  async verifyEmail(verifyEmailDto: VerifyEmailRequestDto): Promise<VerifyEmailResponseDto> {
-    const { email, otp } = verifyEmailDto;
+  // This method handles the email verification process using the OTP sent to the user's email.
+  async verifyOtp(VerifyOtpRequestDto: VerifyOtpRequestDto): Promise<VerifyOtpResponseDto> {
+    const { email, otp } = VerifyOtpRequestDto;
 
-    // It checks if the user exists in the database
+    // It checks if the user exists in the database.
     const user = await this.userRepository.findOne({
       where: { email },
     });
@@ -161,13 +161,10 @@ export class GuestService {
     });
 
     return {
-      message: 'you have been logged in successfully',
+      message: 'You have been logged in successfully',
       accessToken,
       user: {
         id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
       },
     };
   }
@@ -256,7 +253,7 @@ export class GuestService {
     return { message: 'Your password has been reset successfully' };
   }
 
-  // this method generates a 6-digit OTP
+  // This method generates a 6-digit OTP
   // saves it in the database with an expiration time
   // sends it to the user's email.
   private async sendVerificationOtp(user: UserEntity): Promise<void> {
@@ -270,6 +267,7 @@ export class GuestService {
       token: otp,
       expiresAt,
     });
+
     await this.userVerificationRepository.save(newVerification);
 
     const { subject, html } = renderEmailTemplate('verify-otp', {

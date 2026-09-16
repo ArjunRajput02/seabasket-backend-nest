@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsString, Length } from 'class-validator';
-import { SignUpResponseDto } from './sign-up.dto';
 
-export class VerifyEmailRequestDto {
-  @ApiProperty({ example: 'arjun.rajput@seaflux.tech' })
+export class VerifyOtpRequestDto {
+  @ApiProperty({ example: 'jane@gmail.com' })
   @IsEmail()
   @Transform(({ value }) =>
     typeof value === 'string' ? value.trim().toLowerCase() : String(value),
@@ -17,13 +16,15 @@ export class VerifyEmailRequestDto {
   otp: string;
 }
 
-export class VerifyEmailResponseDto {
-  @ApiProperty({ example: 'you have been logged in successfully' })
+export class VerifyOtpResponseDto {
+  @ApiProperty()
   message: string;
 
   @ApiProperty()
   accessToken: string;
 
-  @ApiProperty({ type: SignUpResponseDto })
-  user: SignUpResponseDto;
+  @ApiProperty()
+  user: {
+    id: string;
+  };
 }

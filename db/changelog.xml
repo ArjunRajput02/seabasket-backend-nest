@@ -128,4 +128,27 @@
     </createIndex>
 </changeSet>
 
+
+<changeSet author="Arjun Rajput" id="6">
+    <renameColumn tableName="users" oldColumnName="created_at" newColumnName="createdAt" columnDataType="TIMESTAMP"/>
+    <renameColumn tableName="users" oldColumnName="updated_at" newColumnName="updatedAt" columnDataType="TIMESTAMP"/>
+</changeSet>
+
+<changeSet author="Arjun Rajput" id="7">
+    <renameColumn tableName="user_verifications" oldColumnName="user_id" newColumnName="userId" columnDataType="UUID"/>
+    <renameColumn tableName="user_verifications" oldColumnName="expires_at" newColumnName="expiresAt" columnDataType="TIMESTAMP"/>
+    <renameColumn tableName="user_verifications" oldColumnName="created_at" newColumnName="createdAt" columnDataType="TIMESTAMP"/>
+
+    <dropColumn tableName="user_verifications" columnName="verified_at"/>
+</changeSet>
+
+<changeSet author="Arjun Rajput" id="8">
+    <dropPrimaryKey tableName="user_verifications" constraintName="pk_user_verifications"/>
+    <dropColumn tableName="user_verifications" columnName="id"/>
+    <addColumn tableName="user_verifications">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true" primaryKeyName="pk_user_verifications" nullable="false"/>
+        </column>
+    </addColumn>
+</changeSet>
 </databaseChangeLog>
