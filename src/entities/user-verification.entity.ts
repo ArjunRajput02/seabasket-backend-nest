@@ -29,10 +29,6 @@ export class UserVerificationEntity {
   @ApiProperty()
   expiresAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
-  @ApiProperty({ required: false, nullable: true })
-  verifiedAt: Date | null;
-
   @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;

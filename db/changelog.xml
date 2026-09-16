@@ -51,8 +51,6 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="verifiedAt" type="TIMESTAMP"/>
-
             <column
                 name="createdAt"
                 type="TIMESTAMP"
