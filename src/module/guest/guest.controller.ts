@@ -1,12 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Headers,
-  HttpCode,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GuestService } from './guest.service';
 import {
@@ -36,8 +28,8 @@ export class GuestController {
   })
   @ApiResponse({ status: 201, description: 'Account created.', type: SignUpResponseDto })
   @ApiResponse({ status: 409, description: 'Email already registered.' })
-  signUp(@Body() SignUpRequestDto: SignUpRequestDto) {
-    return this.guestService.signUp(SignUpRequestDto);
+  signUp(@Body() signUpRequestDto: SignUpRequestDto) {
+    return this.guestService.signUp(signUpRequestDto);
   }
 
   @Post('sign-in')
@@ -53,15 +45,14 @@ export class GuestController {
   }
 
   @Post('verify-email')
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Verify email with OTP',
     description: 'Verifies the user email using the 6-digit OTP sent at sign-in.',
   })
   @ApiResponse({ status: 200, description: 'Account verified.', type: VerifyOtpResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid or expired OTP.' })
-  verifyOtp(@Body() VerifyOtpRequestDto: VerifyOtpRequestDto) {
-    return this.guestService.verifyOtp(VerifyOtpRequestDto);
+  verifyOtp(@Body() verifyOtpRequestDto: VerifyOtpRequestDto) {
+    return this.guestService.verifyOtp(verifyOtpRequestDto);
   }
 
   @Post('forgot-password')
@@ -74,8 +65,8 @@ export class GuestController {
     description: 'Instructions sent (if the account exists).',
     type: ForgotPasswordResponseDto,
   })
-  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordRequestDto) {
-    return this.guestService.forgotPassword(forgotPasswordDto);
+  forgotPassword(@Body() forgotPasswordRequestDto: ForgotPasswordRequestDto) {
+    return this.guestService.forgotPassword(forgotPasswordRequestDto);
   }
 
   @Post('reset-password')
@@ -93,12 +84,8 @@ export class GuestController {
   @ApiResponse({ status: 400, description: 'Missing, invalid, or expired reset token.' })
   resetPassword(
     @Headers('x-reset-token') token: string,
-    @Body() resetPasswordDto: ResetPasswordRequestDto,
+    @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
   ) {
-    if (!token) {
-      throw new BadRequestException('x-reset-token header is required');
-    }
-
-    return this.guestService.resetPassword(token, resetPasswordDto);
+    return this.guestService.resetPassword(token, resetPasswordRequestDto);
   }
 }

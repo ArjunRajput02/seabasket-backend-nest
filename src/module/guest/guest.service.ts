@@ -48,8 +48,8 @@ export class GuestService {
 
   // this method handles the sign-up process for a new user.
   // saves the new user to the database
-  async signUp(SignUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
-    const { name, email, phone, password } = SignUpRequestDto;
+  async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
+    const { name, email, phone, password } = signUpRequestDto;
 
     const existingUser = await this.userRepository.findOne({
       where: [{ email }, { phone }],
@@ -92,8 +92,8 @@ export class GuestService {
   }
 
   // This method handles the sign-in process for an existing user.
-  async signIn(SignInRequestDto: SignInRequestDto): Promise<SignInResponseDto> {
-    const { email, password } = SignInRequestDto;
+  async signIn(signInRequestDto: SignInRequestDto): Promise<SignInResponseDto> {
+    const { email, password } = signInRequestDto;
 
     // It checks if the user exists in the database.
     const user = await this.userRepository.findOne({
@@ -123,8 +123,8 @@ export class GuestService {
   }
 
   // This method handles the email verification process using the OTP sent to the user's email.
-  async verifyOtp(VerifyOtpRequestDto: VerifyOtpRequestDto): Promise<VerifyOtpResponseDto> {
-    const { email, otp } = VerifyOtpRequestDto;
+  async verifyOtp(verifyOtpRequestDto: VerifyOtpRequestDto): Promise<VerifyOtpResponseDto> {
+    const { email, otp } = verifyOtpRequestDto;
 
     // It checks if the user exists in the database.
     const user = await this.userRepository.findOne({
@@ -171,9 +171,9 @@ export class GuestService {
 
   // this method handles the forgot password process.
   async forgotPassword(
-    forgotPasswordDto: ForgotPasswordRequestDto,
+    forgotPasswordRequestDto: ForgotPasswordRequestDto,
   ): Promise<ForgotPasswordResponseDto> {
-    const { email } = forgotPasswordDto;
+    const { email } = forgotPasswordRequestDto;
 
     const genericMessage = 'We have sent a reset password link to your email';
 
@@ -186,10 +186,14 @@ export class GuestService {
       this.logger.error('Please Enter the correct email', { email });
       throw new BadRequestException('Please Enter the correct email');
     }
+    // generates a secure random token for password reset
+    const rawToken = randomBytes(32).toString('hex');
 
-    const rawToken = randomBytes(32).toString('hex'); // generates a secure random token for password reset
-    const tokenHash = createHash('sha256').update(rawToken).digest('hex'); // hashes the token using SHA-256 for secure storage in the database
-    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000); // sets an expiration time for the token
+    // hashes the token using SHA-256 for secure storage in the database
+    const tokenHash = createHash('sha256').update(rawToken).digest('hex');
+
+    // sets an expiration time for the token
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
 
     // It deletes any existing password reset tokens for the user to ensure only one valid token exists at a time
     await this.passwordResetTokenRepository.delete({ userId: user.id });
@@ -200,10 +204,12 @@ export class GuestService {
       tokenHash,
       expiresAt,
     });
-    await this.passwordResetTokenRepository.save(newResetToken); // saves the new password reset token to the database
+
+    // saves the new password reset token to the database
+    await this.passwordResetTokenRepository.save(newResetToken);
 
     // It constructs a password reset link that includes the raw token as a query parameter
-    const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PATH ?? '/reset-password'}?token=${rawToken}`;
+    const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PATH}/${rawToken}`;
 
     // It renders an email template for the password reset email, including the user's name and the reset link
     const { subject, html } = renderEmailTemplate('forgot-password', {
@@ -220,11 +226,18 @@ export class GuestService {
   // this method handles the password reset process using the token from the reset password link.
   async resetPassword(
     token: string,
-    resetPasswordDto: ResetPasswordRequestDto,
+    resetPasswordRequestDto: ResetPasswordRequestDto,
   ): Promise<ResetPasswordResponseDto> {
-    const { newPassword } = resetPasswordDto;
+    // checks if the token is provided in the request header. If not, it throws a BadRequestException with an appropriate error message
+    if (!token) {
+      this.logger.error('x-reset-token header is required');
+      throw new BadRequestException('x-reset-token header is required');
+    }
 
-    const tokenHash = createHash('sha256').update(token).digest('hex'); // hashes the provided token using SHA-256 for secure comparison with the stored hashed token in the database
+    const { newPassword } = resetPasswordRequestDto;
+
+    // hashes the provided token using SHA-256 for secure comparison with the stored hashed token in the database
+    const tokenHash = createHash('sha256').update(token).digest('hex');
 
     // It checks if the hashed token exists in the database and retrieves the corresponding password reset token entity
     const resetToken = await this.passwordResetTokenRepository.findOne({
