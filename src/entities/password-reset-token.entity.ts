@@ -29,10 +29,6 @@ export class PasswordResetTokenEntity {
   @ApiProperty()
   expiresAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
-  @ApiProperty({ required: false, nullable: true })
-  usedAt: Date | null;
-
   @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;

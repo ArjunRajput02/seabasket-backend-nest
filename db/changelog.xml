@@ -95,7 +95,6 @@
         <column name="expiresAt" type="TIMESTAMP">
             <constraints nullable="false"/>
         </column>
-        <column name="usedAt" type="TIMESTAMP"/>
         <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
             <constraints nullable="false"/>
         </column>
