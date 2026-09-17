@@ -19,10 +19,6 @@ export class CategoryEntity {
   @ApiProperty()
   name: string;
 
-  @Column({ type: 'text', nullable: true })
-  @ApiProperty({ required: false, nullable: true })
-  description: string;
-
   @Column({ nullable: true })
   @ApiProperty({ required: false, nullable: true })
   imageUrl: string;

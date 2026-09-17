@@ -24,7 +24,6 @@ export class CategoryService {
     return categories.map((category) => ({
       id: category.id,
       name: category.name,
-      description: category.description,
       imageUrl: category.imageUrl,
     }));
   }
