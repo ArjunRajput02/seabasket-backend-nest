@@ -45,6 +45,7 @@ export class GuestController {
   }
 
   @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Verify email with OTP',
     description: 'Verifies the user email using the 6-digit OTP sent at sign-in.',
