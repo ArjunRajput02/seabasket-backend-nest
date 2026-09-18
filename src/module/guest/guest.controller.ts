@@ -56,6 +56,7 @@ export class GuestController {
   }
 
   @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Forgot password',
     description: 'Emails a password reset link if an account exists for the given email.',
@@ -70,6 +71,7 @@ export class GuestController {
   }
 
   @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Reset password',
     description:
