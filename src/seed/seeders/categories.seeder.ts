@@ -17,7 +17,7 @@ export class CategoriesSeeder {
     this.logger.log('Seeding categories information');
 
     // Collect category names from the seed data to check for existing categories.
-    const categoryNames = CATEGORIES_SEED_DATA.map((c) => c.name);
+    const categoryNames = CATEGORIES_SEED_DATA.map((category) => category.name);
 
     // Fetch existing categories from the database that match the names in the seed data.
     const existing = await this.categoryRepository.find({
