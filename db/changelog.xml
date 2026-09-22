@@ -131,8 +131,6 @@
         </createTable>
     </changeSet>
 
-    </databaseChangeLog>
-
     <changeSet author="Arjun Rajput" id="5">
         <createTable tableName="products">
             <column name="id" type="INT" autoIncrement="true">
