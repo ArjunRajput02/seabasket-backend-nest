@@ -86,16 +86,27 @@ export class ProductService {
   }
 
   // this method creates a new product
-  async createProduct(dto: CreateProductDto): Promise<GetProductsResponseDto> {
+  async createProduct(createProductDto: CreateProductDto): Promise<GetProductsResponseDto> {
+    const {
+      categoryId,
+      name,
+      description,
+      price,
+      discountPercentage = 0,
+      stockQuantity = 0,
+      isTrending = false,
+      isAvailable = true,
+    } = createProductDto;
+
     const product = this.productRepository.create({
-      categoryId: dto.categoryId,
-      name: dto.name,
-      description: dto.description,
-      price: dto.price,
-      discountPercentage: dto.discountPercentage ?? 0,
-      stockQuantity: dto.stockQuantity ?? 0,
-      isTrending: dto.isTrending ?? false,
-      isAvailable: dto.isAvailable ?? true,
+      categoryId: categoryId,
+      name: name,
+      description: description,
+      price: price,
+      discountPercentage: discountPercentage,
+      stockQuantity: stockQuantity,
+      isTrending: isTrending,
+      isAvailable: isAvailable,
     });
 
     // save the new product to the database
@@ -116,42 +127,53 @@ export class ProductService {
   ): Promise<GetProductsResponseDto> {
     const product = await this.productRepository.findOne({ where: { id } });
 
+    const {
+      categoryId,
+      name,
+      price,
+      description,
+      discountPercentage,
+      stockQuantity,
+      isTrending,
+      isAvailable,
+    } = updateProductDto;
+
     // If the product is not found, log an error and throw a NotFoundException.
     if (!product) {
       this.logger.error('Product not found', { id });
       throw new NotFoundException('Product not found');
     }
 
-    if (updateProductDto.categoryId !== undefined) {
-      product.categoryId = updateProductDto.categoryId;
+    if (categoryId !== undefined) {
+      product.categoryId = categoryId;
     }
 
-    if (updateProductDto.name !== undefined) {
-      product.name = updateProductDto.name;
+    if (name !== undefined) {
+      product.name = name;
     }
 
-    if (updateProductDto.price !== undefined) {
-      product.price = updateProductDto.price;
+    if (price !== undefined) {
+      product.price = price;
     }
 
-    if (updateProductDto.description !== undefined) {
-      product.description = updateProductDto.description;
+    if (description !== undefined) {
+      product.description = description;
     }
 
-    if (updateProductDto.discountPercentage !== undefined) {
-      product.discountPercentage = updateProductDto.discountPercentage;
+    if (discountPercentage !== undefined) {
+      product.discountPercentage = discountPercentage;
     }
 
-    if (updateProductDto.stockQuantity !== undefined) {
-      product.stockQuantity = updateProductDto.stockQuantity;
+    if (stockQuantity !== undefined) {
+      product.stockQuantity = stockQuantity;
     }
 
-    if (updateProductDto.isTrending !== undefined) {
-      product.isTrending = updateProductDto.isTrending;
+    if (isTrending !== undefined) {
+      product.isTrending = isTrending;
     }
 
-    if (updateProductDto.isAvailable !== undefined) {
-      product.isAvailable = updateProductDto.isAvailable;
+    if (isAvailable !== undefined) {
+      product.isAvailable = isAvailable;
     }
 
     // Save the updated product to the database and return the updated product in GetProductsResponseDto format.
@@ -273,19 +295,32 @@ export class ProductService {
   // This method converts a ProductEntity instance into a GetProductsResponseDto format.
   private toResponseDto(product: ProductEntity): GetProductsResponseDto {
     const [primaryImage] = product.images ?? [];
+    const {
+      id,
+      name,
+      description,
+      price,
+      discountPercentage,
+      rating,
+      reviewCount,
+      isTrending,
+      isAvailable,
+      category,
+      categoryId,
+    } = product;
 
     return {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      discountPercentage: product.discountPercentage,
-      rating: product.rating,
-      reviewCount: product.reviewCount,
-      isTrending: product.isTrending,
-      isAvailable: product.isAvailable,
-      categoryId: product.categoryId,
-      categoryName: product.category?.name,
+      id: id,
+      name: name,
+      description: description,
+      price: price,
+      discountPercentage: discountPercentage,
+      rating: rating,
+      reviewCount: reviewCount,
+      isTrending: isTrending,
+      isAvailable: isAvailable,
+      categoryId: categoryId,
+      categoryName: category?.name,
       imageUrl: primaryImage?.imageUrl ?? null,
     };
   }
