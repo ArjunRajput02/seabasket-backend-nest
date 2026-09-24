@@ -19,8 +19,6 @@ export class CategoryService {
       order: { name: 'ASC' },
     });
 
-    this.logger.log(`Fetched ${categories.length} categories`);
-
     return categories.map((category) => ({
       id: category.id,
       name: category.name,
