@@ -20,8 +20,8 @@ export class CloudinaryService {
   }
 
   // Uploads an image to Cloudinary and returns the secure URL of the uploaded image.
-  async uploadImage(params: UploadImageParams): Promise<string | null> {
-    const { buffer, folder } = params;
+  async uploadImage(uploadImageParams: UploadImageParams): Promise<string | null> {
+    const { buffer, folder } = uploadImageParams;
 
     try {
       // Upload the image to Cloudinary using a stream
