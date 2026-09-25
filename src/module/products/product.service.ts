@@ -80,8 +80,6 @@ export class ProductService {
       .orderBy('product.createdAt', 'DESC')
       .getMany();
 
-    this.logger.log('Fetched trending products', { count: products.length });
-
     return products.map((product) => this.toResponseDto(product));
   }
 
@@ -111,8 +109,6 @@ export class ProductService {
 
     // save the new product to the database
     const saved = await this.productRepository.save(product);
-
-    this.logger.log('Created product', { id: saved.id });
 
     // return the newly created product in GetProductsResponseDto format
     return this.getProductById(saved.id);
@@ -179,8 +175,6 @@ export class ProductService {
     // Save the updated product to the database and return the updated product in GetProductsResponseDto format.
     const saved = await this.productRepository.save(product);
 
-    this.logger.log('Updated product', { id: saved.id });
-
     return this.getProductById(saved.id);
   }
 
@@ -206,8 +200,6 @@ export class ProductService {
     }
 
     const savedImage = await this.saveProductImage(productId, imageUrl, isPrimary ?? false);
-
-    this.logger.log('Added image to product', { productId });
 
     return {
       message: 'Product image uploaded successfully.',
