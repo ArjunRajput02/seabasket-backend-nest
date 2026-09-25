@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfig } from './config/database.config';
 import { GuestModule } from './module/guest/guest.module';
+import { CategoryModule } from './module/category/category.module';
+import { ProductModule } from './module/products/product.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import { GuestModule } from './module/guest/guest.module';
       useClass: DatabaseConfig,
     }),
     GuestModule,
+    CategoryModule,
+    ProductModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],

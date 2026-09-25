@@ -82,35 +82,147 @@
     </changeSet>
 
     <changeSet author="Arjun Rajput" id="3">
-    <createTable tableName="password_reset_tokens">
-        <column name="id" type="INT" autoIncrement="true">
-            <constraints primaryKey="true" primaryKeyName="pk_password_reset_tokens" nullable="false"/>
-        </column>
-        <column name="userId" type="INT">
-            <constraints nullable="false"/>
-        </column>
-        <column name="tokenHash" type="VARCHAR(255)">
-            <constraints nullable="false" unique="true"/>
-        </column>
-        <column name="expiresAt" type="TIMESTAMP">
-            <constraints nullable="false"/>
-        </column>
-        <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
-            <constraints nullable="false"/>
-        </column>
-    </createTable>
+        <createTable tableName="password_reset_tokens">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_password_reset_tokens" nullable="false"/>
+            </column>
+            <column name="userId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tokenHash" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="expiresAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
-    <addForeignKeyConstraint
-            constraintName="fk_password_reset_tokens_userId"
-            baseTableName="password_reset_tokens"
-            baseColumnNames="userId"
-            referencedTableName="users"
+        <addForeignKeyConstraint
+                constraintName="fk_password_reset_tokens_userId"
+                baseTableName="password_reset_tokens"
+                baseColumnNames="userId"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <createIndex indexName="idx_password_reset_tokens_userId" tableName="password_reset_tokens">
+            <column name="userId"/>
+        </createIndex>
+        </changeSet>
+
+    <changeSet author="Arjun Rajput" id="4">
+        <createTable tableName="categories">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_categories" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_categories_name"/>
+            </column>
+            <column name="imageUrl" type="TEXT"/>
+            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Arjun Rajput" id="5">
+        <createTable tableName="products">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_products" nullable="false"/>
+            </column>
+            <column name="categoryId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="price" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discountPercentage" type="DECIMAL(5,2)" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stockQuantity" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rating" type="DECIMAL(2,1)" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reviewCount" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isTrending" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isAvailable" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            constraintName="fk_products_categoryId"
+            baseTableName="products"
+            baseColumnNames="categoryId"
+            referencedTableName="categories"
+            referencedColumnNames="id"
+            onDelete="RESTRICT"/>
+
+        <createIndex indexName="idx_products_categoryId" tableName="products">
+            <column name="categoryId"/>
+        </createIndex>
+
+        <createIndex indexName="idx_products_isTrending" tableName="products">
+            <column name="isTrending"/>
+        </createIndex>
+
+        <createIndex indexName="idx_products_isAvailable" tableName="products">
+            <column name="isAvailable"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Arjun Rajput" id="6">
+        <createTable tableName="product_images">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_product_images" nullable="false"/>
+            </column>
+            <column name="productId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="imageUrl" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isPrimary" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            constraintName="fk_product_images_productId"
+            baseTableName="product_images"
+            baseColumnNames="productId"
+            referencedTableName="products"
             referencedColumnNames="id"
             onDelete="CASCADE"/>
 
-    <createIndex indexName="idx_password_reset_tokens_userId" tableName="password_reset_tokens">
-        <column name="userId"/>
-    </createIndex>
-</changeSet>
+        <createIndex indexName="idx_product_images_productId" tableName="product_images">
+            <column name="productId"/>
+        </createIndex>
+    </changeSet>
 
-</databaseChangeLog>
+    </databaseChangeLog>
