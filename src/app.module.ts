@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfig } from './config/database.config';
 import { GuestModule } from './module/guest/guest.module';
 import { CategoryModule } from './module/category/category.module';
+import { ProductModule } from './module/products/product.module';
 import { SeedModule } from './seed/seed.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { SeedModule } from './seed/seed.module';
     }),
     GuestModule,
     CategoryModule,
+    ProductModule,
     SeedModule,
   ],
   controllers: [],
