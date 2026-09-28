@@ -111,6 +111,24 @@
     <createIndex indexName="idx_password_reset_tokens_userId" tableName="password_reset_tokens">
         <column name="userId"/>
     </createIndex>
-</changeSet>
+    </changeSet>
 
-</databaseChangeLog>
+    <changeSet author="Arjun Rajput" id="4">
+    <createTable tableName="categories">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true" primaryKeyName="pk_categories" nullable="false"/>
+        </column>
+        <column name="name" type="VARCHAR(100)">
+            <constraints nullable="false" unique="true" uniqueConstraintName="uk_categories_name"/>
+         </column>
+        <column name="imageUrl" type="TEXT"/>
+        <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+        <column name="updatedAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+    </createTable>
+    </changeSet>
+
+    </databaseChangeLog>
